@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>群晖NAS通过Zerotier实现外网访问 | 向阳不晚</title><meta name="keywords" content="群晖,Zerotier"><meta name="author" content="晚阳Crown"><meta name="copyright" content="晚阳Crown"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0.前言最近自己的电信宽带变更地址了，申请的公网IP莫名其妙没了……想到又要去重新申请公网IP、光猫桥接、端口映射等一系列繁琐操作，索性决定换外网访问方案。无意中发现Zerotier，配置和使用起来都非常简单，速度快、安全性又高，最关键的是免费使用，真是相见恨晚！  环境  群晖DSM版本：7.1.1-42962 Update 1 群晖NAS ZeroTier客户端版本：1.10.1 Window">
+<meta property="og:type" content="article">
+<meta property="og:title" content="群晖NAS通过Zerotier实现外网访问">
+<meta property="og:url" content="http://example.com/2022/11/22/NAS/%E7%BE%A4%E6%99%96NAS%E9%80%9A%E8%BF%87Zerotier%E5%AE%9E%E7%8E%B0%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE/index.html">
+<meta property="og:site_name" content="向阳不晚">
+<meta property="og:description" content="0.前言最近自己的电信宽带变更地址了，申请的公网IP莫名其妙没了……想到又要去重新申请公网IP、光猫桥接、端口映射等一系列繁琐操作，索性决定换外网访问方案。无意中发现Zerotier，配置和使用起来都非常简单，速度快、安全性又高，最关键的是免费使用，真是相见恨晚！  环境  群晖DSM版本：7.1.1-42962 Update 1 群晖NAS ZeroTier客户端版本：1.10.1 Window">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2022-11-22T06:50:06.000Z">
+<meta property="article:modified_time" content="2022-12-04T14:27:13.377Z">
+<meta property="article:author" content="晚阳Crown">
+<meta property="article:tag" content="群晖">
+<meta property="article:tag" content="Zerotier">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/icon.png"><link rel="canonical" href="http://example.com/2022/11/22/NAS/%E7%BE%A4%E6%99%96NAS%E9%80%9A%E8%BF%87Zerotier%E5%AE%9E%E7%8E%B0%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '群晖NAS通过Zerotier实现外网访问',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-04 22:27:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/head.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">向阳不晚</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">群晖NAS通过Zerotier实现外网访问</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-22T06:50:06.000Z" title="发表于 2022-11-22 14:50:06">2022-11-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-12-04T14:27:13.377Z" title="更新于 2022-12-04 22:27:13">2022-12-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/NAS/">NAS</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="群晖NAS通过Zerotier实现外网访问"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><h2 id="0-前言"><a href="#0-前言" class="headerlink" title="0.前言"></a>0.前言</h2><p>最近自己的电信宽带变更地址了，申请的公网IP莫名其妙没了……想到又要去重新申请公网IP、光猫桥接、端口映射等一系列繁琐操作，索性决定换外网访问方案。无意中发现Zerotier，配置和使用起来都非常简单，速度快、安全性又高，最关键的是<strong>免费使用</strong>，真是相见恨晚！</p>
+<blockquote>
+<p><strong>环境</strong></p>
+<ul>
+<li>群晖DSM版本：7.1.1-42962 Update 1</li>
+<li>群晖NAS ZeroTier客户端版本：1.10.1</li>
+<li>Windows ZeroTier客户端版本：1.10.2</li>
+<li>Android ZeroTier客户端版本：1.8.9-1</li>
+</ul>
+</blockquote>
+<h2 id="1-创建Zerotier网络"><a href="#1-创建Zerotier网络" class="headerlink" title="1.创建Zerotier网络"></a>1.创建Zerotier网络</h2><p><a target="_blank" rel="noopener" href="https://www.zerotier.com/">官网</a>注册账号，然后创建网络<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082286.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082394.png"></p>
+<h2 id="2-Zerotier客户端安装与配置"><a href="#2-Zerotier客户端安装与配置" class="headerlink" title="2.Zerotier客户端安装与配置"></a>2.Zerotier客户端安装与配置</h2><p>每个需要加入Zerotier网络的设备都需要安装Zerotier客户端<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082669.png"></p>
+<h3 id="2-1-群晖NAS"><a href="#2-1-群晖NAS" class="headerlink" title="2.1 群晖NAS"></a>2.1 群晖NAS</h3><ul>
+<li>在Docker套件中下载Zerotier客户端映像<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082701.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082714.png"></li>
+<li>启动并配置下载好的映像<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082806.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082826.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082839.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082848.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082861.png"></li>
+<li>加入之前创建的Zerotier网络<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669082958.png"><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zerotier-cli join 网络ID</span><br></pre></td></tr></table></figure>
+<img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669083097.png"><br>显示如下信息，说明加入成功<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669083114.png"><br>如下命令可以查看设备的地址和状态<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zerotier-cli status</span><br></pre></td></tr></table></figure>
+<img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669083329.png"></li>
+<li>打开之前创建好的网络的管理界面<ul>
+<li>在Members选项卡中就可以看到申请加入网络的设备了，其中的Address和命令<code>zerotier-cli status</code>查看的设备地址是相对应的</li>
+<li>打勾表示授权设备加入该网络，加入后Zerotier会自动分配一个IP地址，该网络中的设备就可以通过分配的IP地址相互访问<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669083401.png"></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-Windows端"><a href="#2-2-Windows端" class="headerlink" title="2.2 Windows端"></a>2.2 Windows端</h3><ul>
+<li>安装客户端，加入网络，并在后台授权<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669083949.png"></li>
+<li>然后就可以连接网络了，<code>Start UI at Login</code>勾选后开机会自动启动<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669084210.png"></li>
+</ul>
+<h3 id="2-3-Android端"><a href="#2-3-Android端" class="headerlink" title="2.3 Android端"></a>2.3 Android端</h3><ul>
+<li>安装客户端，加入网络，并在后台授权<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669084341.png"></li>
+<li>连接网络<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669084575.png"><br>使用流量的话要勾选<code>Use Cellular Data</code><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669084641.png"></li>
+</ul>
+<h2 id="3-测试"><a href="#3-测试" class="headerlink" title="3.测试"></a>3.测试</h2><p>这里以登录群晖为例，你也可以用自己在群晖搭建好的服务测试，如DS video、DS audio等等</p>
+<ul>
+<li>以Windows端为例，确保群晖NAS和Windows端的Zerotier客户端都已<strong>加入并连接到同一Zerotier网络</strong>。可以在后台确认下设备是否已连接，已连接的设备会显示绿色的ONLINE字样。<br><img src="https://gavincrown.synology.me:1837/image/2022/11/29/1669687896.png"></li>
+<li>在浏览器中输入群晖NAS分配到的Zerotier IP地址+DSM登录端口，例如<code>https://111.22.33.444:5001</code><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669085002.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669085652.png"></li>
+</ul>
+<h2 id="4-Zerotier-IP地址绑定域名"><a href="#4-Zerotier-IP地址绑定域名" class="headerlink" title="4.Zerotier IP地址绑定域名"></a>4.Zerotier IP地址绑定域名</h2><p>由于我之前用公网IP是绑定域名的，群晖上部署的图床，图片链接都是域名的形式，所以很有必要重新绑定一下……觉得用IP地址访问服务也无所谓的话，可以跳过下文。</p>
+<blockquote>
+<p>Tips：群晖为每个用户都提供了一个免费域名，还是强烈推荐大家去申请并绑定一下，使用域名来访问服务。域名的优势第一点是比较好记，第二点用域名访问后续如果IP地址变了的话，重新绑定一下就好，不用每个服务都去修改IP地址。</p>
+</blockquote>
+<ul>
+<li>控制面板 &gt; 外部访问 &gt; DDNS &gt; 新增，申请并配置免费的Synology域名<ul>
+<li>设置主机名称，如john.synology.me，synology.me后缀可以从列表里换成自己喜欢的</li>
+<li>外部地址（IPv4）填上群晖NAS分配到的Zerotier IP地址</li>
+<li>建议勾选上获取证书选项，也可以后续在证书设置中配置<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669092764.png"></li>
+</ul>
+</li>
+<li>后续要修改IP地址的话直接编辑替换外部地址即可<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669093005.png"></li>
+</ul>
+<h2 id="5-关于DDNS"><a href="#5-关于DDNS" class="headerlink" title="5.关于DDNS"></a>5.关于DDNS</h2><p>DDNS（动态域名系统）通过将主机名映射到其 IP 地址来简化通过 Internet 与 Synology NAS 的连接。例如，DDNS 可让您使用域名（如<code>www.john.synology.me</code>）来访问 Synology NAS，而无需记住 IP 地址（如<code>172.16.254.1</code>）。</p>
+<ul>
+<li>将IP地址和域名绑定的操作，因为需要同步到DNS根服务器，而DNS根服务器会不定时刷，所以只有DNS根服务器刷新后域名才能正常访问，需要等一会才能生效。</li>
+<li>可以用ping命令来查看域名是否生效。输入”ping 你的域名”，如果红框部分为你对应的主机IP即解析成功。<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669095539.png"></li>
+</ul>
+<h2 id="6-关于证书"><a href="#6-关于证书" class="headerlink" title="6.关于证书"></a>6.关于证书</h2><p>证书可用于保护 Synology NAS 的 SSL 服务，如网页（所有的 HTTPS 服务）、邮件或 FTP。拥有证书可让用户在发送任何保密信息之前验证服务器和管理员的身份。</p>
+<ul>
+<li>控制面板 &gt; 安全性 &gt; 证书 &gt; 新增，可以创建证书<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669096173.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669096254.png"><br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669096299.png"></li>
+<li>默认证书就是所有新增的服务都会默认使用的证书<blockquote>
+<p>如果和你域名相对应的证书不是默认证书，那么后续新增的使用域名访问的服务，就需要手动到设置里将它修改为域名相对应的证书。<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669096474.png"></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="7-内网通过域名访问失败的问题"><a href="#7-内网通过域名访问失败的问题" class="headerlink" title="7.内网通过域名访问失败的问题"></a>7.内网通过域名访问失败的问题</h2><p>在外网通过Zerotier IP地址或者绑定的域名访问一切正常，但在内网用域名会有访问不了的问题。这和我之前用公网IP遇到的问题是一样的。</p>
+<p>这种现象叫IP回流或端口回流（NAT Lookback or NAT Hairpin），简单来说，就是路由器一旦遇到在内网通过域名访问外网中本机的公网IP的请求，即会自动屏蔽&#x2F;抛弃掉该请求。 </p>
+<p>那么如何在局域网内配置实现内网机器通过域名访问同局域网内的服务呢？两种解决方案：一是在局域网内搭建一个DNS服务器（群晖里可以用DNS Server套件），二是本地电脑更改hosts文件。这里只演示第二种，比较方便。</p>
+<ul>
+<li><p>hosts文件位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Windows\System32\drivers\etc\hosts</span><br></pre></td></tr></table></figure></li>
+<li><p>设置下权限，这样才能编辑和保存<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669098081.png"></p>
+</li>
+<li><p>填上IP地址跟上域名，保存后就可以正常访问了<br><img src="https://gavincrown.synology.me:1837/image/2022/11/22/1669098278.png"></p>
+</li>
+<li><p>安卓端也一样，直接修改hosts文件即可（需要root），自己的手机系统是鸿蒙，没法演示</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">晚阳Crown</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2022/11/22/NAS/%E7%BE%A4%E6%99%96NAS%E9%80%9A%E8%BF%87Zerotier%E5%AE%9E%E7%8E%B0%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE/">http://example.com/2022/11/22/NAS/%E7%BE%A4%E6%99%96NAS%E9%80%9A%E8%BF%87Zerotier%E5%AE%9E%E7%8E%B0%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">向阳不晚</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BE%A4%E6%99%96/">群晖</a><a class="post-meta__tags" href="/tags/Zerotier/">Zerotier</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/08/14/%E5%8D%9A%E5%AE%A2/Obsidian+Git%E5%AE%8C%E7%BE%8E%E7%BB%B4%E6%8A%A4Hexo%E5%8D%9A%E5%AE%A2/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Obsidian+Git完美维护Hexo博客</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">晚阳Crown</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E5%89%8D%E8%A8%80"><span class="toc-text">0.前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BAZerotier%E7%BD%91%E7%BB%9C"><span class="toc-text">1.创建Zerotier网络</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Zerotier%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">2.Zerotier客户端安装与配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%BE%A4%E6%99%96NAS"><span class="toc-text">2.1 群晖NAS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Windows%E7%AB%AF"><span class="toc-text">2.2 Windows端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Android%E7%AB%AF"><span class="toc-text">2.3 Android端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B5%8B%E8%AF%95"><span class="toc-text">3.测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Zerotier-IP%E5%9C%B0%E5%9D%80%E7%BB%91%E5%AE%9A%E5%9F%9F%E5%90%8D"><span class="toc-text">4.Zerotier IP地址绑定域名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%85%B3%E4%BA%8EDDNS"><span class="toc-text">5.关于DDNS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%85%B3%E4%BA%8E%E8%AF%81%E4%B9%A6"><span class="toc-text">6.关于证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%86%85%E7%BD%91%E9%80%9A%E8%BF%87%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE%E5%A4%B1%E8%B4%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">7.内网通过域名访问失败的问题</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/11/22/NAS/%E7%BE%A4%E6%99%96NAS%E9%80%9A%E8%BF%87Zerotier%E5%AE%9E%E7%8E%B0%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE/" title="群晖NAS通过Zerotier实现外网访问">群晖NAS通过Zerotier实现外网访问</a><time datetime="2022-11-22T06:50:06.000Z" title="发表于 2022-11-22 14:50:06">2022-11-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/14/%E5%8D%9A%E5%AE%A2/Obsidian+Git%E5%AE%8C%E7%BE%8E%E7%BB%B4%E6%8A%A4Hexo%E5%8D%9A%E5%AE%A2/" title="Obsidian+Git完美维护Hexo博客">Obsidian+Git完美维护Hexo博客</a><time datetime="2022-08-14T08:06:41.000Z" title="发表于 2022-08-14 16:06:41">2022-08-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/13/%E5%8D%9A%E5%AE%A2/Hexo%E5%8D%9A%E5%AE%A2%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Hexo博客的使用">Hexo博客的使用</a><time datetime="2022-08-13T06:42:07.000Z" title="发表于 2022-08-13 14:42:07">2022-08-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/11/%E5%8D%9A%E5%AE%A2/%E5%9F%BA%E4%BA%8EHexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="基于Hexo搭建个人博客">基于Hexo搭建个人博客</a><time datetime="2022-08-11T09:25:47.000Z" title="发表于 2022-08-11 17:25:47">2022-08-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/11/%E5%8D%9A%E5%AE%A2/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="如何搭建个人博客">如何搭建个人博客</a><time datetime="2022-08-11T06:55:09.000Z" title="发表于 2022-08-11 14:55:09">2022-08-11</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 晚阳Crown</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
